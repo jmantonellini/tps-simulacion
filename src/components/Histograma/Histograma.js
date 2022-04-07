@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react'
-import Highcharts from 'highcharts'
-import HighchartsReact from 'highcharts-react-official'
+import React, { useEffect } from "react";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
+import "./Histograma.css";
 
 const Histograma = ({
-  title = '',
-  subtitle = '',
+  title = "",
+  subtitle = "",
   xAxis = [],
   data1 = [],
   data2 = [],
 }) => {
-  console.log(data1)
   const options = {
     chart: {
-      type: 'column',
+      type: "column",
     },
     title: {
       text: title,
@@ -27,15 +27,15 @@ const Histograma = ({
     yAxis: {
       min: 0,
       title: {
-        text: 'Rainfall (mm)',
+        text: "Frecuencia",
       },
     },
     tooltip: {
       headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
       pointFormat:
         '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-      footerFormat: '</table>',
+        '<td style="padding:0"><b>{point.y}</b></td></tr>',
+      footerFormat: "</table>",
       shared: true,
       useHTML: true,
     },
@@ -47,23 +47,23 @@ const Histograma = ({
     },
     series: [
       {
-        name: 'Tokyo',
+        name: "Generador",
         data: data1,
       },
-      // {
-      //   name: 'New York',
-      //   data: data2,
-      // },
+      {
+        name: "Esperada",
+        data: data2,
+      },
     ],
-  }
+  };
 
   return (
-    <div id="container" style={{ height: '100%', width: '400px' }}>
+    <div className="container">
       <div>
         <HighchartsReact highcharts={Highcharts} options={options} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Histograma
+export default Histograma;
