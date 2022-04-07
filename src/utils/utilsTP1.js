@@ -4,8 +4,8 @@ import React from "react";
 export const parseRandomsTableRows = ({ iteracion, random, xi }) => {
   return {
     iteracion,
-    random,
     xi,
+    random,
   };
 };
 
@@ -34,7 +34,7 @@ export const parseFrequencyTableRows = ({
 };
 
 export const frequencyTableHeaderRow = [
-  { tooltipText: "Intervale", title: "N" },
+  { tooltipText: "Intervalo", title: "N" },
   { tooltipText: "Límite inferior", title: "<" },
   { tooltipText: "Límite superior", title: ">" },
   { tooltipText: "Marca de clase", title: "M C" },

@@ -32,7 +32,7 @@ import {
 import "./Tp1.css";
 
 export const Tp1 = () => {
-  const [variables, setVariables] = useState({});
+  const [variables, setVariables] = useState({ interval: "5" });
   const [frequencyTableRows, setFrequencyTableRows] = useState([]);
   const [randomsTableRows, setRandomsTableRows] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -103,7 +103,7 @@ export const Tp1 = () => {
             ></TextField>
           </div>
         </Tooltip>
-        <Tooltip title="Módulo a multiplicar" placement="top" arrow>
+        <Tooltip title="Multiplicador" placement="top" arrow>
           <div className="input">
             <TextField
               id={RND_GEN_VAR_KEYS.A}
@@ -139,7 +139,7 @@ export const Tp1 = () => {
             ></TextField>
           </div>
         </Tooltip>
-        <Tooltip title="Módulo a multiplicar" placement="top" arrow>
+        <Tooltip title="Incremento" placement="top" arrow>
           <div className="input">
             <TextField
               id={RND_GEN_VAR_KEYS.C}
@@ -159,24 +159,6 @@ export const Tp1 = () => {
               disabled={
                 !isCustomSelected || generatorType === RND_GEN_TYPES.rndConMul
               }
-              size="small"
-            ></TextField>
-          </div>
-        </Tooltip>
-        <Tooltip title="Módulo a multiplicar" placement="top" arrow>
-          <div className="input">
-            <TextField
-              id={RND_GEN_VAR_KEYS.K}
-              label="K"
-              required
-              className="input"
-              variant="outlined"
-              value={variables?.varK}
-              type="number"
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.K, event.target.value)
-              }
-              disabled={!isCustomSelected}
               size="small"
             ></TextField>
           </div>

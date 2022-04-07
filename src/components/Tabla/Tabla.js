@@ -8,7 +8,6 @@ import {
   Tooltip,
   Paper,
 } from "@mui/material";
-import { maxHeight } from "@mui/system";
 import React from "react";
 
 const Tabla = ({ headerRow = [], tableRows = [], maxHeight = 205 }) => {

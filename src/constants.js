@@ -11,7 +11,6 @@ export const RND_GEN_VAR_KEYS = {
   A: "a",
   C: "c",
   M: "m",
-  K: "k",
   N: "n",
   SEED: "seed",
   INTERVAL: "interval",
