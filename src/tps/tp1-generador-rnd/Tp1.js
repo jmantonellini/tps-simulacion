@@ -8,9 +8,11 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import React, { useState } from "react";
 import Histograma from "../../components/Histograma/Histograma";
@@ -29,7 +31,9 @@ import {
   parseRandomsTableRows,
   Transition,
 } from "../../utils/utilsTP1";
-import "./Tp1.css";
+import Styles from "./Tp1Styles.js";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 
 export const Tp1 = () => {
   const [variables, setVariables] = useState({ interval: "5" });
@@ -38,6 +42,7 @@ export const Tp1 = () => {
   const [loading, setLoading] = useState(false);
   const [openedDialog, setOpenedDialog] = useState(false);
   const [isCustomSelected, setIsCustomSelected] = useState(true);
+  const [pruebaChiAceptada, setPruebaChiAceptada] = useState(false);
   const [generatorType, setGeneratorType] = useState(RND_GEN_TYPES.rndConMix);
   const [marcasClase, setMarcasClase] = useState([]);
   const [frecGeneradas, setFrecGeneradas] = useState([]);
@@ -60,13 +65,13 @@ export const Tp1 = () => {
 
   const renderInputs = () => {
     return (
-      <div className="inputContainers">
+      <Paper style={Styles.inputsContainer}>
         <Tooltip
           title="Método a utilizar para generar números aleatorios"
           placement="top"
           arrow
         >
-          <FormControl className="input">
+          <FormControl style={Styles.input}>
             <InputLabel>Tipo</InputLabel>
             <Select
               value={generatorType}
@@ -87,31 +92,31 @@ export const Tp1 = () => {
           placement="top"
           arrow
         >
-          <div className="input">
+          <FormControl style={Styles.input}>
             <TextField
               id={RND_GEN_VAR_KEYS.N}
               label="Tamaño (N)"
               required
               variant="outlined"
               value={variables?.varN}
-              className="input"
+              style={Styles.input}
               type="number"
               onChange={(event) =>
                 handleChange(RND_GEN_VAR_KEYS.N, event.target.value)
               }
               size="small"
             ></TextField>
-          </div>
+          </FormControl>
         </Tooltip>
         <Tooltip title="Multiplicador" placement="top" arrow>
-          <div className="input">
+          <FormControl style={Styles.input}>
             <TextField
               id={RND_GEN_VAR_KEYS.A}
               label="A"
               required
               variant="outlined"
               value={variables?.varA}
-              className="input"
+              style={Styles.input}
               type="number"
               onChange={(event) =>
                 handleChange(RND_GEN_VAR_KEYS.A, event.target.value)
@@ -119,15 +124,15 @@ export const Tp1 = () => {
               disabled={!isCustomSelected}
               size="small"
             ></TextField>
-          </div>
+          </FormControl>
         </Tooltip>
         <Tooltip title="Módulo a multiplicar" placement="top" arrow>
-          <div className="input">
+          <FormControl style={Styles.input}>
             <TextField
               id={RND_GEN_VAR_KEYS.M}
               label="M"
               required
-              className="input"
+              style={Styles.input}
               variant="outlined"
               value={variables?.varM}
               type="number"
@@ -137,15 +142,15 @@ export const Tp1 = () => {
               disabled={!isCustomSelected}
               size="small"
             ></TextField>
-          </div>
+          </FormControl>
         </Tooltip>
         <Tooltip title="Incremento" placement="top" arrow>
-          <div className="input">
+          <FormControl style={Styles.input}>
             <TextField
               id={RND_GEN_VAR_KEYS.C}
               label="C"
               required
-              className="input"
+              style={Styles.input}
               variant="outlined"
               value={
                 generatorType !== RND_GEN_TYPES.rndConMul
@@ -161,14 +166,14 @@ export const Tp1 = () => {
               }
               size="small"
             ></TextField>
-          </div>
+          </FormControl>
         </Tooltip>
         <Tooltip
           title="Semilla utilizada al comienzo de los cálculos"
           placement="top"
           arrow
         >
-          <div className="input">
+          <FormControl style={Styles.input}>
             <TextField
               id={RND_GEN_VAR_KEYS.SEED}
               label="Seed"
@@ -182,34 +187,32 @@ export const Tp1 = () => {
               disabled={!isCustomSelected}
               size="small"
             ></TextField>
-          </div>
+          </FormControl>
         </Tooltip>
         <Tooltip
           title="Cantidad de intervalos en los que divido los datos"
           placement="top"
           arrow
         >
-          <div className="input">
-            <FormControl className="input">
-              <InputLabel>Intervalo</InputLabel>
-              <Select
-                id={RND_GEN_VAR_KEYS.INTERVAL}
-                value={variables?.interval}
-                onChange={(event) =>
-                  handleChange(RND_GEN_VAR_KEYS.INTERVAL, event.target.value)
-                }
-                label="Intervalo"
-                size="small"
-              >
-                <MenuItem value={"5"}>5</MenuItem>
-                <MenuItem value={"8"}>8</MenuItem>
-                <MenuItem value={"10"}>10</MenuItem>
-                <MenuItem value={"12"}>12</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
+          <FormControl style={Styles.input}>
+            <InputLabel>Intervalos</InputLabel>
+            <Select
+              id={RND_GEN_VAR_KEYS.INTERVAL}
+              value={variables?.interval}
+              onChange={(event) =>
+                handleChange(RND_GEN_VAR_KEYS.INTERVAL, event.target.value)
+              }
+              label="Intervalos"
+              size="small"
+            >
+              <MenuItem value={"5"}>5</MenuItem>
+              <MenuItem value={"8"}>8</MenuItem>
+              <MenuItem value={"10"}>10</MenuItem>
+              <MenuItem value={"12"}>12</MenuItem>
+            </Select>
+          </FormControl>
         </Tooltip>
-      </div>
+      </Paper>
     );
   };
 
@@ -267,6 +270,7 @@ export const Tp1 = () => {
       .then((response) => response.json())
       .then((data) => {
         parseHistogramResponse(data?.histograma?.intervalos);
+        setPruebaChiAceptada(data?.histograma?.pruebaBondadChiCuadrado);
         setLoading(false);
         setOpenedDialog(true);
       });
@@ -287,65 +291,92 @@ export const Tp1 = () => {
   };
 
   return (
-    <div className="mainContainer">
-      <div className="contentContainer">
-        <div className="splitContainer">
-          <div className="headerContainer">
-            <div className="title">Simulación</div>
-            <div className="title">Trabajo práctico 1</div>
-          </div>
-          <div className="splitHorizontalContainer">
-            <div className="columnContainer">
-              {renderInputs()}
-              <div className="input">
-                <Button
-                  variant="outlined"
-                  disabled={false}
-                  onClick={generateRandoms}
-                >
-                  Generar Aleatorios
-                </Button>
-              </div>
-            </div>
-            <Tabla
-              headerRow={randomsTableHeaderRow}
-              tableRows={randomsTableRows}
-              maxHeight={500}
-            />
-          </div>
+    <div style={Styles.mainContainer}>
+      <div style={Styles.headerContainer}>
+        <div style={Styles.quarterContainer(true, true)}>
+          <Typography variant="h5" component="div" gutterBottom>
+            Simulación
+          </Typography>
+          <Typography variant="body1" component="div" gutterBottom>
+            Antonellini, Juan Manuel - 60239
+          </Typography>
         </div>
-        <div className="splitContainer">
-          {loading ? (
-            <LoadingAnimation />
-          ) : (
-            <Tabla
-              headerRow={frequencyTableHeaderRow}
-              tableRows={frequencyTableRows}
-            />
-          )}
+        <div style={Styles.quarterContainer(false, true)}>
+          <Typography variant="h5" component="div" gutterBottom>
+            Trabajo práctico 1
+          </Typography>
+          <Typography variant="body1" component="div" gutterBottom>
+            67858 - Gavilan, Ezequiel
+          </Typography>
+        </div>
+      </div>
+      <div style={Styles.splitVerticalContainer}>
+        <div style={Styles.quarterContainer(true, true)}>{renderInputs()}</div>
+        <div style={Styles.quarterContainer(false, true)}>
+          <Tabla
+            headerRow={randomsTableHeaderRow}
+            tableRows={randomsTableRows}
+          />
+        </div>
+      </div>
+      <div style={Styles.buttonContainer}>
+        {loading ? (
+          <LoadingAnimation />
+        ) : (
+          <Button variant="outlined" disabled={false} onClick={generateRandoms}>
+            Generar Aleatorios
+          </Button>
+        )}
+      </div>
+      <div style={Styles.splitVerticalContainer}>
+        <div style={Styles.quarterContainer(true, false)}>
+          <Tabla
+            headerRow={frequencyTableHeaderRow}
+            tableRows={frequencyTableRows}
+          />
+        </div>
+        <div style={Styles.quarterContainer(false, false)}>
           <Histograma
             xAxis={marcasClase}
             data1={frecGeneradas}
             data2={frecEsperadas}
           />
-          <div>
-            <Dialog
-              open={openedDialog}
-              TransitionComponent={Transition}
-              keepMounted
-              onClose={handleCloseDialog}
-            >
-              <DialogTitle>{"Felicitaciones!"}</DialogTitle>
-              <DialogContent>
+        </div>
+        <div>
+          <Dialog
+            open={openedDialog}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={handleCloseDialog}
+          >
+            <DialogTitle>
+              {pruebaChiAceptada ? "Felicitaciones!" : "Qué lástima.."}
+            </DialogTitle>
+            <DialogContent>
+              <div style={Styles.dialogContainer}>
                 <DialogContentText>
-                  La prueba de Chi Cuadrado ah sido aceptada
+                  La prueba de Chi Cuadrado ah sido
+                  {pruebaChiAceptada ? " aceptada." : " rechazada."}
                 </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleCloseDialog}>Volver</Button>
-              </DialogActions>
-            </Dialog>
-          </div>
+                {pruebaChiAceptada ? (
+                  <CheckCircleOutlineOutlinedIcon
+                    color="success"
+                    fontSize="large"
+                    sx={{ marginTop: 3 }}
+                  />
+                ) : (
+                  <CancelOutlinedIcon
+                    color="error"
+                    fontSize="large"
+                    sx={{ marginTop: 3 }}
+                  />
+                )}
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Volver</Button>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     </div>

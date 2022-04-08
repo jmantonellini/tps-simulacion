@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import "./Histograma.css";
+import Styles from "./HistogramaStyles.js";
+import { Paper } from "@mui/material";
 
 const Histograma = ({
   title = "",
@@ -13,6 +14,8 @@ const Histograma = ({
   const options = {
     chart: {
       type: "column",
+      height: 205,
+      width: 648,
     },
     title: {
       text: title,
@@ -58,11 +61,11 @@ const Histograma = ({
   };
 
   return (
-    <div className="container">
+    <Paper className={Styles.container}>
       <div>
         <HighchartsReact highcharts={Highcharts} options={options} />
       </div>
-    </div>
+    </Paper>
   );
 };
 
