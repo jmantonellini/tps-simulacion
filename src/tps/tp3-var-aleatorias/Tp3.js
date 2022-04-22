@@ -21,6 +21,8 @@ import Tabla from "../../components/Tabla/Tabla";
 import {
   API_GENERADORES,
   API_HISTOGRAMA,
+  DISTR_KEYS,
+  INPUT_TYPES,
   RND_GEN_TYPES,
   RND_GEN_VAR_KEYS,
 } from "../../constants";
@@ -30,26 +32,32 @@ import {
   randomsTableHeaderRow,
   parseRandomsTableRows,
   Transition,
+  frequencyTableHeaderRowPoisson,
+  parseFrequencyTableRowsPoisson,
 } from "../../utils/utils";
-import Styles from "./Tp1Styles.js";
+import Styles from "./Tp3Styles.js";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import LogoUtn from "../../assets/LOGO-UTN.png";
+import Input from "../../components/Input/Input";
 
-export const Tp1 = () => {
-  const [variables, setVariables] = useState({ interval: "5" });
+export const Tp3 = () => {
+  const [variables, setVariables] = useState({
+    interval: "8",
+    distribucion: DISTR_KEYS.UNIFORME,
+  });
   const [frequencyTableRows, setFrequencyTableRows] = useState([]);
   const [randomsTableRows, setRandomsTableRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [openedDialog, setOpenedDialog] = useState(false);
-  const [isCustomSelected, setIsCustomSelected] = useState(true);
   const [pruebaChiAceptada, setPruebaChiAceptada] = useState(false);
-  const [generatorType, setGeneratorType] = useState(RND_GEN_TYPES.rndConMix);
+  const [generatorType, setGeneratorType] = useState(RND_GEN_TYPES.uniforme);
   const [marcasClase, setMarcasClase] = useState([]);
   const [frecGeneradas, setFrecGeneradas] = useState([]);
   const [frecEsperadas, setFrecEsperadas] = useState([]);
 
   const handleChange = (key, value) => {
+    console.log("Handle change", key, value);
     const newVariables = { ...variables, [key]: value };
     setVariables(newVariables);
   };
@@ -59,173 +67,111 @@ export const Tp1 = () => {
   };
 
   const handleChangeGenerator = (event) => {
+    handleChange(RND_GEN_VAR_KEYS.DISTRIBUCION, event.target.value);
     setGeneratorType(event.target.value);
-    const genType = event.target.value;
-    setIsCustomSelected(genType !== RND_GEN_TYPES.rndJS);
   };
+
+  const inputs = [
+    {
+      type: INPUT_TYPES.TEXT,
+      tooltip: "Cantidad de números aleatorios a generar",
+      value: variables?.varN,
+      key: RND_GEN_VAR_KEYS.N,
+      label: "Tamaño (N)",
+      handleChange: handleChange,
+    },
+    {
+      type: INPUT_TYPES.TEXT,
+      tooltip: "Variable A",
+      value: variables?.varA,
+      key: RND_GEN_VAR_KEYS.A,
+      label: "A",
+      handleChange: handleChange,
+    },
+    {
+      type: INPUT_TYPES.TEXT,
+      tooltip: "Variable B",
+      value: variables?.varB,
+      key: RND_GEN_VAR_KEYS.B,
+      label: "B",
+      handleChange: handleChange,
+    },
+    {
+      type: INPUT_TYPES.TEXT,
+      tooltip: "Media",
+      value: variables?.varMedia,
+      key: RND_GEN_VAR_KEYS.MEDIA,
+      label: "Media",
+      handleChange: handleChange,
+    },
+    {
+      type: INPUT_TYPES.TEXT,
+      tooltip: "Desviación Estándar",
+      value: variables?.varDesv,
+      key: RND_GEN_VAR_KEYS.DESVIACION,
+      label: "Desviación Estándar",
+      handleChange: handleChange,
+    },
+    {
+      type: INPUT_TYPES.SELECT,
+      tooltip: "Cantidad de intervalos en los que divido los datos",
+      value: variables?.interval,
+      key: RND_GEN_VAR_KEYS.INTERVAL,
+      label: "Intervalos",
+      handleChange: handleChange,
+      menuItems: [
+        { value: "8", label: "8" },
+        { value: "10", label: "10" },
+        { value: "15", label: "15" },
+        { value: "20", label: "20" },
+      ],
+    },
+  ];
 
   const renderInputs = () => {
     return (
       <Paper style={Styles.inputsContainer}>
         <Tooltip
-          title="Método a utilizar para generar números aleatorios"
+          title="Distribución elegida para generar los valores"
           placement="top"
           arrow
         >
           <FormControl style={Styles.input}>
-            <InputLabel>Tipo</InputLabel>
+            <InputLabel>Distribución</InputLabel>
             <Select
-              value={generatorType}
+              value={variables?.distribucion}
               onChange={handleChangeGenerator}
-              label="Tipo"
+              label="Distribución"
               size="small"
             >
-              <MenuItem value={RND_GEN_TYPES.rndConMix}>Mixto</MenuItem>
-              <MenuItem value={RND_GEN_TYPES.rndConMul}>
-                Multiplicativo
-              </MenuItem>
-              <MenuItem value={RND_GEN_TYPES.rndJS}>Java</MenuItem>
+              <MenuItem value={DISTR_KEYS.UNIFORME}>Uniforme</MenuItem>
+              <MenuItem value={DISTR_KEYS.NORMAL}>Normal</MenuItem>
+              <MenuItem value={DISTR_KEYS.POISSON}>Poisson</MenuItem>
+              <MenuItem value={DISTR_KEYS.EXPONENCIAL}>Exponencial</MenuItem>
             </Select>
           </FormControl>
         </Tooltip>
-        <Tooltip
-          title="Cantidad de números aleatorios a generar"
-          placement="top"
-          arrow
-        >
-          <FormControl style={Styles.input}>
-            <TextField
-              id={RND_GEN_VAR_KEYS.N}
-              label="Tamaño (N)"
-              required
-              variant="outlined"
-              value={variables?.varN}
-              style={Styles.input}
-              type="number"
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.N, event.target.value)
-              }
-              size="small"
-              inputProps={{ max: 100 }}
-            ></TextField>
-          </FormControl>
-        </Tooltip>
-        <Tooltip title="Multiplicador" placement="top" arrow>
-          <FormControl style={Styles.input}>
-            <TextField
-              id={RND_GEN_VAR_KEYS.A}
-              label="A"
-              required
-              variant="outlined"
-              value={variables?.varA}
-              style={Styles.input}
-              type="number"
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.A, event.target.value)
-              }
-              disabled={!isCustomSelected}
-              size="small"
-            ></TextField>
-          </FormControl>
-        </Tooltip>
-        <Tooltip title="Módulo a multiplicar" placement="top" arrow>
-          <FormControl style={Styles.input}>
-            <TextField
-              id={RND_GEN_VAR_KEYS.M}
-              label="M"
-              required
-              style={Styles.input}
-              variant="outlined"
-              value={variables?.varM}
-              type="number"
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.M, event.target.value)
-              }
-              disabled={!isCustomSelected}
-              size="small"
-            ></TextField>
-          </FormControl>
-        </Tooltip>
-        <Tooltip title="Incremento" placement="top" arrow>
-          <FormControl style={Styles.input}>
-            <TextField
-              id={RND_GEN_VAR_KEYS.C}
-              label="C"
-              required
-              style={Styles.input}
-              variant="outlined"
-              value={
-                generatorType !== RND_GEN_TYPES.rndConMul
-                  ? variables?.varC
-                  : "0"
-              }
-              type="number"
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.C, event.target.value)
-              }
-              disabled={
-                !isCustomSelected || generatorType === RND_GEN_TYPES.rndConMul
-              }
-              size="small"
-            ></TextField>
-          </FormControl>
-        </Tooltip>
-        <Tooltip
-          title="Semilla utilizada al comienzo de los cálculos"
-          placement="top"
-          arrow
-        >
-          <FormControl style={Styles.input}>
-            <TextField
-              id={RND_GEN_VAR_KEYS.SEED}
-              label="Seed"
-              required
-              variant="outlined"
-              value={variables?.seed}
-              type="number"
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.SEED, event.target.value)
-              }
-              disabled={!isCustomSelected}
-              size="small"
-            ></TextField>
-          </FormControl>
-        </Tooltip>
-        <Tooltip
-          title="Cantidad de intervalos en los que divido los datos"
-          placement="top"
-          arrow
-        >
-          <FormControl style={Styles.input}>
-            <InputLabel>Intervalos</InputLabel>
-            <Select
-              id={RND_GEN_VAR_KEYS.INTERVAL}
-              value={variables?.interval}
-              onChange={(event) =>
-                handleChange(RND_GEN_VAR_KEYS.INTERVAL, event.target.value)
-              }
-              label="Intervalos"
-              size="small"
-            >
-              <MenuItem value={"5"}>5</MenuItem>
-              <MenuItem value={"8"}>8</MenuItem>
-              <MenuItem value={"10"}>10</MenuItem>
-              <MenuItem value={"12"}>12</MenuItem>
-            </Select>
-          </FormControl>
-        </Tooltip>
+        {inputs.map((input) => (
+          <Input input={input} />
+        ))}
       </Paper>
     );
   };
 
   const parseGeneratorResponse = (iteraciones) => {
+    console.log(iteraciones);
     const newRows = iteraciones?.map((row) => parseRandomsTableRows(row));
     console.log(newRows);
     setRandomsTableRows(newRows);
   };
 
   const parseHistogramResponse = (intervalos) => {
-    const newRows = intervalos?.map((row) => parseFrequencyTableRows(row));
+    console.log(intervalos);
+    const newRows = intervalos?.map((row) =>
+      generatorType !== RND_GEN_TYPES.poisson
+        ? parseFrequencyTableRows(row)
+        : parseFrequencyTableRowsPoisson(row)
+    );
     setFrequencyTableRows(newRows);
     obtenerMarcasClase(intervalos);
     obtenerFrecuencias(intervalos);
@@ -254,49 +200,46 @@ export const Tp1 = () => {
       },
       body: JSON.stringify({
         n: variables?.[RND_GEN_VAR_KEYS.N],
-        intervalos: variables?.[RND_GEN_VAR_KEYS.INTERVAL],
-        seed: variables?.[RND_GEN_VAR_KEYS.SEED],
-        mod: variables?.[RND_GEN_VAR_KEYS.M],
-        multiplicador: variables?.[RND_GEN_VAR_KEYS.A],
-        incremento: variables?.[RND_GEN_VAR_KEYS.C],
+        extremoIzquierdo: variables?.[RND_GEN_VAR_KEYS.A],
+        extremoDerecho: variables?.[RND_GEN_VAR_KEYS.B],
+        cantidadIntervalos: variables?.[RND_GEN_VAR_KEYS.INTERVAL],
+        media: variables?.[RND_GEN_VAR_KEYS.MEDIA],
+        desvEstandar: variables?.[RND_GEN_VAR_KEYS.DESVIACION],
       }),
     });
   };
 
-  const generateHistogram = () => {
-    fetchApi(
-      generatorType === RND_GEN_TYPES.rndJS
-        ? API_HISTOGRAMA.lenguaje
-        : API_HISTOGRAMA.custom
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        parseHistogramResponse(data?.histograma?.intervalos);
-        setPruebaChiAceptada(data?.histograma?.pruebaBondadChiCuadrado);
-        setLoading(false);
-        setOpenedDialog(true);
-      });
-  };
-
   const generateRandoms = () => {
     setLoading(true);
-    fetchApi(
-      generatorType === RND_GEN_TYPES.rndJS
-        ? API_GENERADORES.lenguaje
-        : API_GENERADORES.custom
-    )
+    fetchApi(API_GENERADORES[generatorType])
       .then((response) => response.json())
       .then((data) => {
-        parseGeneratorResponse(data?.tabla?.iteraciones);
-        generateHistogram();
-      });
+        parseGeneratorResponse(
+          data?.generadorResponse?.tablaDto
+            ? data?.generadorResponse?.tablaDto?.iteraciones
+            : data?.generadorResponse?.tabla?.iteraciones
+        );
+        parseHistogramResponse(
+          data?.generadorResponse?.histogramaDto
+            ? data?.generadorResponse?.histogramaDto?.intervalos
+            : data?.generadorResponse?.histograma?.intervalos
+        );
+        setPruebaChiAceptada(
+          data?.generadorResponse?.histogramaDto
+            ? data?.generadorResponse?.histogramaDto?.pruebaBondadChiCuadrado
+            : data?.generadorResponse?.histogramaDto?.pruebaBondadChiCuadrado
+        );
+        setLoading(false);
+        setOpenedDialog(true);
+      })
+      .catch((error) => setLoading(false));
   };
 
   return (
     <div style={Styles.mainContainer}>
       <div style={Styles.headerContainer}>
         <Typography variant="h4" component="div" gutterBottom>
-          Generador de números aleatorios
+          Variables aleatorias
         </Typography>
       </div>
       <div style={Styles.splitVerticalContainer}>
@@ -310,7 +253,7 @@ export const Tp1 = () => {
             />
             <div>
               <Typography variant="h5" component="div" gutterBottom>
-                Simulación - Trabajo Práctico 1
+                Simulación - Trabajo Práctico 3
               </Typography>
               <Typography variant="body1" component="div" gutterBottom>
                 Antonellini, Juan Manuel - 60239
@@ -341,7 +284,11 @@ export const Tp1 = () => {
       <div style={Styles.splitVerticalContainer}>
         <div style={Styles.quarterContainer(true, false)}>
           <Tabla
-            headerRow={frequencyTableHeaderRow}
+            headerRow={
+              generatorType !== RND_GEN_TYPES.poisson
+                ? frequencyTableHeaderRow
+                : frequencyTableHeaderRowPoisson
+            }
             tableRows={frequencyTableRows}
           />
         </div>

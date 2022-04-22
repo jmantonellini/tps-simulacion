@@ -14,8 +14,8 @@ const Histograma = ({
   const options = {
     chart: {
       type: "column",
-      height: 205,
-      width: 648,
+      height: 300,
+      width: 729,
     },
     title: {
       text: title,

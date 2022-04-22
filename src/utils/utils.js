@@ -1,11 +1,10 @@
 import { Slide } from "@mui/material";
 import React from "react";
 
-export const parseRandomsTableRows = ({ iteracion, random, xi }) => {
+export const parseRandomsTableRows = ({ iteracion, valor }) => {
   return {
     iteracion,
-    xi,
-    random,
+    valor,
   };
 };
 
@@ -33,6 +32,20 @@ export const parseFrequencyTableRows = ({
   };
 };
 
+export const parseFrequencyTableRowsPoisson = ({
+  intervalo,
+  valor,
+  frecuencia,
+  frecuenciaEsperada,
+}) => {
+  return {
+    intervalo,
+    valor,
+    frecuencia,
+    frecuenciaEsperada,
+  };
+};
+
 export const frequencyTableHeaderRow = [
   { tooltipText: "Intervalo", title: "N" },
   { tooltipText: "Límite inferior", title: "<" },
@@ -48,10 +61,16 @@ export const frequencyTableHeaderRow = [
   },
 ];
 
+export const frequencyTableHeaderRowPoisson = [
+  { tooltipText: "Intervalo", title: "N" },
+  { tooltipText: "Valor", title: "Valor" },
+  { tooltipText: "Frecuencia", title: "F" },
+  { tooltipText: "Frecuencia esperada", title: "F E" },
+];
+
 export const randomsTableHeaderRow = [
   { tooltipText: "Iteración", title: "N" },
-  { tooltipText: "Resto de la división", title: "Xi" },
-  { tooltipText: "Número random generado", title: "Random" },
+  { tooltipText: "Número aleatorio generado", title: "Random" },
 ];
 
 export const Transition = React.forwardRef(function Transition(props, ref) {

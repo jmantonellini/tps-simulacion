@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const Tabla = ({ headerRow = [], tableRows = [], maxHeight = 202 }) => {
+const Tabla = ({ headerRow = [], tableRows = [], maxHeight = 300 }) => {
   return (
     <TableContainer
       component={Paper}
-      sx={{ minHeight: 202, maxHeight: maxHeight }}
+      sx={{ minHeight: 300, maxHeight: maxHeight }}
     >
       <Table stickyHeader aria-label="Tabla de randoms" size="small">
         <TableHead>
